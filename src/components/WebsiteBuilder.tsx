@@ -38,9 +38,12 @@ const WebsiteBuilder: React.FC = () => {
     if (isInitialized) return; // Prevent multiple calls
     setIsInitialized(true);
     // Await the axios POST request and remove unused destructuring
-    const response = await axios.post(`${process.env.BACKEND_URL}/template`, {
-      prompt: prompt,
-    });
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/template`,
+      {
+        prompt: prompt,
+      }
+    );
     const { prompts, uiPrompts } = response.data;
     const parsedSteps = parseSteps(uiPrompts[0]);
     setStepsState(
@@ -50,12 +53,15 @@ const WebsiteBuilder: React.FC = () => {
         active: true,
       }))
     );
-    const stepsResponse = await axios.post(`${process.env.BACKEND_URL}/chat`, {
-      messages: [...prompts, prompt].map((content) => ({
-        role: "user",
-        content,
-      })),
-    });
+    const stepsResponse = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/chat`,
+      {
+        messages: [...prompts, prompt].map((content) => ({
+          role: "user",
+          content,
+        })),
+      }
+    );
 
     // const stepsResponse = await axios.post(`http://localhost:3000/chat`, {
     //   contents: [
@@ -177,7 +183,7 @@ const WebsiteBuilder: React.FC = () => {
             };
 
             const stepsResponse = await axios.post(
-              `${process.env.BACKEND_URL}/chat`,
+              `${import.meta.env.VITE_BACKEND_URL}/chat`,
               {
                 // Map each message from your existing format to the Generative AI API's format
                 messages: [...llmMessages, newMessage]
