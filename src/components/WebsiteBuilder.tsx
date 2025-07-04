@@ -11,9 +11,9 @@ import { useWebContainer } from "../hooks/useWebContainer";
 import { createMount } from "../utils/createMount";
 import { parseBoltArtifactRobust } from "../utils/parsellm";
 import { PreviewFrame } from "./PreviewPanel";
-// import dotenv from "dotenv";
+import dotenv from "dotenv";
 
-// dotenv.config();
+dotenv.config();
 
 const WebsiteBuilder: React.FC = () => {
   const [userPrompt, setuserPrompt] = useState<string>("");
@@ -38,7 +38,7 @@ const WebsiteBuilder: React.FC = () => {
     if (isInitialized) return; // Prevent multiple calls
     setIsInitialized(true);
     // Await the axios POST request and remove unused destructuring
-    const response = await axios.post(`http://localhost:3000/template`, {
+    const response = await axios.post(`${process.env.BACKEND_URL}/template`, {
       prompt: prompt,
     });
     const { prompts, uiPrompts } = response.data;
@@ -50,7 +50,7 @@ const WebsiteBuilder: React.FC = () => {
         active: true,
       }))
     );
-    const stepsResponse = await axios.post(`http://localhost:3000/chat`, {
+    const stepsResponse = await axios.post(`${process.env.BACKEND_URL}/chat`, {
       messages: [...prompts, prompt].map((content) => ({
         role: "user",
         content,
@@ -177,7 +177,7 @@ const WebsiteBuilder: React.FC = () => {
             };
 
             const stepsResponse = await axios.post(
-              `http://localhost:3000/chat`,
+              `${process.env.BACKEND_URL}/chat`,
               {
                 // Map each message from your existing format to the Generative AI API's format
                 messages: [...llmMessages, newMessage]
