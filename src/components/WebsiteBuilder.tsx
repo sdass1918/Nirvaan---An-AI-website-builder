@@ -11,9 +11,6 @@ import { useWebContainer } from "../hooks/useWebContainer";
 import { createMount } from "../utils/createMount";
 import { parseBoltArtifactRobust } from "../utils/parsellm";
 import { PreviewFrame } from "./PreviewPanel";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const WebsiteBuilder: React.FC = () => {
   const [userPrompt, setuserPrompt] = useState<string>("");
