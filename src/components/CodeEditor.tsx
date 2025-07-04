@@ -11,7 +11,6 @@ interface CodeEditorProps {
 const CodeEditor: React.FC<CodeEditorProps> = ({ file, onFileUpdate }) => {
   const [editorContent, setEditorContent] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (file?.code) {
