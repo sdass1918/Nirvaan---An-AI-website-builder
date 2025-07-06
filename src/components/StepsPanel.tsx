@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { CheckCircle, Circle, Loader, ArrowLeft, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Step } from "../types/builder";
+import { stepType } from "../types/builder";
 
 interface StepsPanelProps {
   steps: Step[];
@@ -44,48 +45,52 @@ const StepsPanel: React.FC<StepsPanelProps> = ({
       </div>
 
       {/* Steps */}
-      <div className="flex-1 p-6 overflow-y-auto">
+      <div className="flex-1 p-6 overflow-y-auto h-30%">
         <h3 className="text-lg font-semibold text-white mb-6">
           Generation Progress
         </h3>
         <div className="space-y-4">
-          {steps.map((step, index) => (
-            <div key={step.id} className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-1">
-                {step.completed ? (
-                  <CheckCircle className="h-5 w-5 text-green-400" />
-                ) : step.active ? (
-                  <Loader className="h-5 w-5 text-blue-400 animate-spin" />
-                ) : (
-                  <Circle className="h-5 w-5 text-gray-500" />
-                )}
-              </div>
-              <div className="flex-1">
-                <h4
-                  className={`font-medium ${
-                    step.completed
-                      ? "text-green-400"
-                      : step.active
-                      ? "text-blue-400"
-                      : "text-gray-400"
-                  }`}
-                >
-                  {step.name}
-                </h4>
-                <p className="text-gray-500 text-sm mt-1">{step.description}</p>
-                {step.active && isGenerating && (
-                  <div className="mt-2">
-                    <div className="w-full bg-gray-700 rounded-full h-1">
-                      <div
-                        className="bg-blue-400 h-1 rounded-full animate-pulse"
-                        style={{ width: "60%" }}
-                      ></div>
+          {steps
+            .filter((step) => step.type !== stepType.runScript)
+            .map((step, index) => (
+              <div key={step.id} className="flex items-start gap-3">
+                <div className="flex-shrink-0 mt-1">
+                  {step.completed ? (
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                  ) : step.active ? (
+                    <Loader className="h-5 w-5 text-blue-400 animate-spin" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-gray-500" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h4
+                    className={`font-medium ${
+                      step.completed
+                        ? "text-green-400"
+                        : step.active
+                        ? "text-blue-400"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {step.name}
+                  </h4>
+                  <p className="text-gray-500 text-sm mt-1">
+                    {step.description}
+                  </p>
+                  {step.active && isGenerating && (
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-700 rounded-full h-1">
+                        <div
+                          className="bg-blue-400 h-1 rounded-full animate-pulse"
+                          style={{ width: "60%" }}
+                        ></div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         {/* Status */}

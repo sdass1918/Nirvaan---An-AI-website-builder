@@ -83,7 +83,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, onFileUpdate }) => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-900 overflow-y-scroll">
+    <div className="w-[600px] flex flex-col bg-gray-900 overflow-y-scroll mt-8 mx-8">
       {/* Editor Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="flex items-center justify-between">
@@ -108,28 +108,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ file, onFileUpdate }) => {
               <Eye className="h-4 w-4" />
               Preview
             </button> */}
-
-            <button
-              onClick={handleDownload}
-              className="flex items-center gap-2 px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors text-sm"
-            >
-              <Download className="h-4 w-4" />
-              Download
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={!hasUnsavedChanges}
-              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm"
-            >
-              <Save className="h-4 w-4" />
-              Save
-            </button>
           </div>
         </div>
       </div>
 
       {/* Monaco Editor */}
-      <div className="flex-1">
+      <div className="h-[600px] w-[600px]">
         <Editor
           language={getLanguage(file.name)}
           value={editorContent}

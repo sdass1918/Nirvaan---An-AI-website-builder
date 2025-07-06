@@ -45,7 +45,7 @@ export function PreviewFrame({ files, webContainer }: PreviewFrameProps) {
     main();
   }, []);
   return (
-    <div className="h-full flex items-center justify-center text-gray-400">
+    <div className="mt-8 ml-8 h-[600px] w-[600px] flex items-center justify-center text-gray-400">
       {!url && (
         <div className="text-center">
           <p className="mb-2">Loading...</p>

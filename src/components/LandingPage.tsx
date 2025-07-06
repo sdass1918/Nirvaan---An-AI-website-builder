@@ -35,37 +35,6 @@ const LandingPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-            <Sparkles className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">
-              AI-Powered
-            </h3>
-            <p className="text-gray-400">
-              Advanced AI understands your vision and creates tailored websites
-            </p>
-          </div>
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-            <Code className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">
-              Full Code Access
-            </h3>
-            <p className="text-gray-400">
-              Get complete source code with modern frameworks and best practices
-            </p>
-          </div>
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-            <Zap className="h-12 w-12 text-green-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">
-              Lightning Fast
-            </h3>
-            <p className="text-gray-400">
-              From idea to working website in minutes, not hours
-            </p>
-          </div>
-        </div>
-
         {/* Input Form */}
         <div className="max-w-2xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">

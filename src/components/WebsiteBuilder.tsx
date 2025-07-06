@@ -11,6 +11,7 @@ import { useWebContainer } from "../hooks/useWebContainer";
 import { createMount } from "../utils/createMount";
 import { parseBoltArtifactRobust } from "../utils/parsellm";
 import { PreviewFrame } from "./PreviewPanel";
+import { Divide } from "lucide-react";
 
 const WebsiteBuilder: React.FC = () => {
   const [userPrompt, setuserPrompt] = useState<string>("");
@@ -28,6 +29,8 @@ const WebsiteBuilder: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [hasLoadedFromChat, setHasLoadedFromChat] = useState(false);
+
   //const steps: Step[] = [];
   const [stepsState, setStepsState] = useState<Step[]>([]);
 
@@ -79,7 +82,9 @@ const WebsiteBuilder: React.FC = () => {
         completed: step.completed || false,
         active: step.active !== false, // Preserve existing active state
       }));
+      //setIsGenerating(false);
     });
+    setHasLoadedFromChat(true);
 
     setLlmMessages(
       [...prompts, prompt].map((content) => ({
@@ -96,9 +101,11 @@ const WebsiteBuilder: React.FC = () => {
 
   useEffect(() => {
     init();
+    //setIsGenerating(false);
   }, [prompt]);
 
   useEffect(() => {
+    if (!hasLoadedFromChat) return;
     const initialFiles = generateInitialFiles(stepsState);
     setFiles(initialFiles);
     setIsGenerating(false);
@@ -145,85 +152,88 @@ const WebsiteBuilder: React.FC = () => {
   return (
     <div className="h-screen flex bg-gray-900">
       {/* Steps Panel */}
-      <div className="w-80 bg-gray-800 border-r border-gray-700 flex-shrink-0">
-        <StepsPanel
-          steps={stepsState}
-          currentStep={currentStep}
-          prompt={prompt}
-          isGenerating={isGenerating}
-          LlmMessages={llmMessages}
-        />
-        <div className="mt-8 p-4 bg-gray-700 rounded-lg">
-          <div className="flex items-center gap-2 mb-2">
-            {isGenerating ? (
-              <>
-                <span className="text-blue-400 font-medium">Generating...</span>
-              </>
-            ) : (
-              <div className="flex items-center gap-2 flex-col">
-                <textarea
-                  placeholder="Describe what you'd like to change..."
-                  className="w-full text-sm px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-snug"
-                  value={userPrompt}
-                  onChange={(e) => setuserPrompt(e.target.value)}
-                  rows={2}
-                />
-              </div>
-            )}
-          </div>
+      <div className="w-80 bg-gray-800 border-r border-gray-700 flex-shrink-0 flex flex-col h-full">
+        <div className="flex-1 overflow-y-auto">
+          <StepsPanel
+            steps={stepsState}
+            currentStep={currentStep}
+            prompt={prompt}
+            isGenerating={isGenerating}
+            LlmMessages={llmMessages}
+          />
         </div>
-        <button
-          onClick={async () => {
-            const newMessage = {
-              role: "user" as "user",
-              content: userPrompt,
-            };
+        <div className="p-4 bg-gray-700 border-t border-gray-600">
+          {isGenerating ? (
+            <>
+              <span className="text-blue-400 font-medium">Generating...</span>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 flex-col">
+              <textarea
+                placeholder="Describe what you'd like to change..."
+                className="mb-2 w-full text-sm px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-snug"
+                value={userPrompt}
+                onChange={(e) => setuserPrompt(e.target.value)}
+                rows={2}
+              />
+            </div>
+          )}
+          <button
+            onClick={async () => {
+              setIsGenerating(true);
+              const newMessage = {
+                role: "user" as "user",
+                content: userPrompt,
+              };
 
-            const stepsResponse = await axios.post(
-              `${import.meta.env.VITE_BACKEND_URL}/chat`,
-              {
-                // Map each message from your existing format to the Generative AI API's format
-                messages: [...llmMessages, newMessage]
-                  .filter((msg) => msg.content && msg.content.trim() !== "")
-                  .map((msg) => ({
-                    role: msg.role, // Use the existing role ("user" or "assistant")
-                    parts: [
-                      {
-                        text: msg.content, // Wrap the content string in a 'text' property within a 'parts' array
-                      },
-                    ],
-                  })),
-              }
-            );
-
-            // const stepsResponse = await axios.post(
-            //   `http://localhost:3000/chat`,
-            //   {
-            //     contents: [...LlmMessages, newMessage].map((msg) => ({
-            //       role: msg.role === "assistant" ? "model" : msg.role,
-            //       parts: [{ text: msg.content }],
-            //     })),
-            //   }
-            // );
-
-            setLlmMessages((prevMessages) => [...prevMessages, newMessage]);
-
-            setStepsState((currentSteps) => {
-              const newSteps = parseBoltArtifactRobust(
-                stepsResponse.data,
-                currentSteps
+              const stepsResponse = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/chat`,
+                {
+                  // Map each message from your existing format to the Generative AI API's format
+                  messages: [...llmMessages, newMessage]
+                    .filter((msg) => msg.content && msg.content.trim() !== "")
+                    .map((msg) => ({
+                      role: msg.role, // Use the existing role ("user" or "assistant")
+                      parts: [
+                        {
+                          text: msg.content, // Wrap the content string in a 'text' property within a 'parts' array
+                        },
+                      ],
+                    })),
+                }
               );
-              return newSteps.map((step) => ({
-                ...step,
-                completed: step.completed || false,
-                active: step.active !== false,
-              }));
-            });
-          }}
-          className="bg-gray-500 text-white text-sm px-4 py-1 rounded-md hover:bg-green-600"
-        >
-          Reimagine
-        </button>
+
+              // const stepsResponse = await axios.post(
+              //   `http://localhost:3000/chat`,
+              //   {
+              //     contents: [...LlmMessages, newMessage].map((msg) => ({
+              //       role: msg.role === "assistant" ? "model" : msg.role,
+              //       parts: [{ text: msg.content }],
+              //     })),
+              //   }
+              // );
+
+              setLlmMessages((prevMessages) => [...prevMessages, newMessage]);
+
+              setStepsState((currentSteps) => {
+                const newSteps = parseBoltArtifactRobust(
+                  stepsResponse.data,
+                  currentSteps
+                );
+                return newSteps.map((step) => ({
+                  ...step,
+                  completed: step.completed || false,
+                  active: step.active !== false,
+                }));
+              });
+              setIsGenerating(false);
+              setuserPrompt("");
+            }}
+            className="bg-gray-500 text-white text-sm px-4 py-1 rounded-md hover:bg-green-600"
+          >
+            Reimagine
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -257,20 +267,18 @@ const WebsiteBuilder: React.FC = () => {
           {/* Content Area */}
           <div className="flex-1 flex">
             {/* Code Editor */}
-            <div
-              className={`${showPreview ? "w-1/2" : "w-full"} ${
-                showPreview ? "border-r border-gray-700" : ""
-              }`}
-            >
-              <CodeEditor
-                file={selectedFileData}
-                onFileUpdate={handleFileUpdate}
-              />
-            </div>
+            {!showPreview && (
+              <div className="w-full">
+                <CodeEditor
+                  file={selectedFileData}
+                  onFileUpdate={handleFileUpdate}
+                />
+              </div>
+            )}
 
             {/* Preview Panel */}
             {showPreview && (
-              <div className="w-1/2 bg-gray-900">
+              <div className="w-full bg-gray-900">
                 <PreviewFrame files={files} webContainer={webContainer} />
               </div>
             )}
